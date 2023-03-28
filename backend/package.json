@@ -1,0 +1,11 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "backend for chatapp",
+  "main": "index.ts",
+  "license": "MIT",
+  "dependencies": {
+    "cross-env": "^7.0.3",
+    "frontend": "*"
+  }
+}
