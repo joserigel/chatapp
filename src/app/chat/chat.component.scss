@@ -29,7 +29,7 @@
         
         border-radius: 10px;
         background-color: $colorA;
-        color: white;
+        color: black;
         
         p {
             margin: 0;
@@ -50,7 +50,7 @@
             grid-column: 1;
             grid-row: 1;
             
-            border-bottom: 35px solid transparent;
+            border-bottom: 25px solid transparent;
             border-left: 35px solid $colorA; 
             border-top-right-radius: 20px;
             transform: translate(20px, -10px);
@@ -61,6 +61,7 @@
             background-color: $colorB;
             margin-left: 25px;
             margin-right: 50px;
+            color: white;
 
             &::before {
                 justify-self: start;
