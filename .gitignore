@@ -1,7 +1,10 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
+# Environment Variables
+.env
+
 # Compiled output
-/dist
+/backend/dist
 /tmp
 /out-tsc
 /bazel-out
