@@ -6,6 +6,16 @@ import { User } from './schemas';
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
 
+const generateToken = (username: string, ip: string):string => {
+    const token = jwt.sign(
+        { ip, username },
+        process.env.TOKEN_KEY,
+        { expiresIn: "2h" }
+    );
+
+    return token
+}
+
 export const authorize = (req: Request, res: Response, next: NextFunction) => {
     try {
         const { token } = req.body;
@@ -18,7 +28,9 @@ export const authorize = (req: Request, res: Response, next: NextFunction) => {
             if (!(ip && username && iat && exp)) {
                 res.status(401).end('Bad Auth');
             } else {
-                if (req.ip === ip) {
+                if (req.ip === ip && exp >= moment().unix()) {
+                    res.locals.username = username;
+                    res.locals.token = generateToken(username, req.ip);
                     next();
                 } else {
                     res.status(401).end('Bad Auth');
@@ -45,13 +57,9 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
             const cred = await User.findOne({username: username});
             
             if (cred?.password === password) {
-                const token = jwt.sign(
-                    { ip: req.ip, username },
-                    process.env.TOKEN_KEY,
-                    { expiresIn: "2h" }
-                );
+                const token = generateToken(username, req.ip);
                 
-                res.status(200).json(token);
+                res.status(200).json({token});
             } else {
                 res.status(400).end('<h1>Bad Credentials</h1>');
             }

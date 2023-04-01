@@ -1,57 +1,74 @@
 // Imports
-import Express, { NextFunction } from 'express';
+import Express, { Request, Response, NextFunction } from 'express';
 import { TokenExpiredError } from 'jsonwebtoken';
 import mongoose, { Schema, model } from 'mongoose';
-import { authorize, login } from './authorization';
+import { authorize, login } from './authorization'; 
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
 require('dotenv').config();
 
-import { User } from './schemas';
+import { User, Message } from './schemas';
 
 // Express
 const app = Express();
 app.use(Express.json());
-app.get('/send/:user', async (req: Express.Request, res: Express.Response) => {
-    try {
-         
 
-        
-        const user: string = req.params['user'];
+// Send new Message
+app.post('/send/:recipient', authorize, async (req: Request, res: Response) => {
+    const recipient = await User.findOne({username: req.params['recipient']});
 
-        let recipient = await User.findOne({username: user});
-
-        if (!recipient) {
-            res.status(400).end('<h1>User not found</h1>');
+    if (!recipient) {
+        res.status(400).end('<h1>User not found</h1>');
+    } else {
+        const { text } = req.body;
+        if (!text || text === "") {
+            res.status(400).end('<h1>Text cannot be empty</h1>');
         } else {
-            
-        }
-        
-    } catch (e) {
-        if (e instanceof TokenExpiredError) {
-            res.status(500).end('<h1>Bad Auth</h1>');
-        } else {
-            res.status(500).end('<h1>Internal Server Error</h1>')
+            const message = new Message({ 
+                sender: res.locals.username, 
+                recipient: recipient.username,
+                text: text,
+                unix: moment().unix()
+            });
+            message.save();
+            res.status(200).json({
+                token: res.locals.token
+            });
         }
     }
 });
 
+// Retrieve Messages
+app.post('/messages/:recipient', authorize, async (req: Request, res: Response, next: NextFunction) => {
+    const recipient = req.params['recipient'];
+    const messages = await Message.aggregate([
+        { $project: { _id: 0} },
+        { $match : { $or: [
+            { sender: res.locals.username, recipient: recipient},
+            { sender: recipient, recipient: res.locals.username}
+        ]}},
+        { $sort: { unix: -1} },
+        { $skip: 0 },
+        { $limit: 10}
+    ]);
+
+    res.status(200).json(messages);
+});
+
+// Login
 app.post('/login', login);
 
-
 // Testing
-app.get('/verify', authorize, (req: Express.Request, res: Express.Response) => {
+app.get('/verify', authorize, (req: Request, res: Response) => {
     res.end('SUCCESS');
 })
-app.use('/', (req: Express.Request, res: Express.Response) => {
+app.use('/', (req: Request, res: Response) => {
     res.status(404);
     res.end('<h1>404 Not Found</h1>');
 });
 
-app.listen(3000, async () => {
-    console.log(`listening ${3000}`);
-    console.log(process.env.PORT);
-    
+app.listen(process.env.PORT, async () => {
+    console.log(`Listening @localhost:${process.env.PORT}`);
     await mongoose.connect(
         `mongodb://${process.env.MONGO_HOST}:27017`, 
         {
