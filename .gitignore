@@ -3,6 +3,9 @@
 # Environment Variables
 .env
 
+# Private/Public Keys
+*/keys
+
 # Compiled output
 /backend/dist
 /tmp
