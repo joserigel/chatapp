@@ -1,0 +1,11 @@
+<div class="login">
+    <img src="/assets/message_logo.svg">
+    <form>
+        <label for="username">Username</label>
+        <input type="text" [(ngModel)]="username" id="username" name="username">
+        <label for="password">Password</label>
+        <input type="password" [(ngModel)]="password" id="password" name="password">
+        <h3 *ngIf="error">Username/Password not recognized</h3>
+        <input type="submit" (click)="login()">
+    </form>
+</div>

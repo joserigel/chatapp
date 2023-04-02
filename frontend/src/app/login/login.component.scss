@@ -1,0 +1,53 @@
+@import '../variables.scss';
+
+.login {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    padding: 15px;
+    border-radius: 15px;
+
+    background-color: $mainColor;
+    color: white;
+
+    font-family: $sansSerif;
+
+    img {
+        position: relative;
+        left: 50%;
+        transform: translate(-50%);
+        height: 60px;
+        filter: invert(100%);
+    }
+    
+    form {
+        display: flex;
+        flex-direction: column;
+
+        label {
+            font-size: 24px;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+
+        input {
+            font-size: 24px;
+        }
+
+        input[type=submit] {
+            margin-top: 15px;
+        }
+
+        h3 {
+            margin: 0;
+            opacity: 1;
+            color: #ff7575;
+        }
+
+    }
+
+
+
+}

@@ -5,7 +5,7 @@
         "backend"
     ],
     "scripts": {
-        "frontend": "cd frontend & ng serve",
+        "frontend": "cd frontend & ng serve --proxy-config ./proxy.conf.json",
         "backend": "cd backend & yarn tsc & node ./dist/index.js"
     }
 }
