@@ -5,6 +5,8 @@ import { User } from './schemas';
 
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
+const cookieParser = require('cookie-parser');
+
 
 const generateToken = (username: string, ip: string):string => {
     const token = jwt.sign(
@@ -13,36 +15,43 @@ const generateToken = (username: string, ip: string):string => {
         { expiresIn: "2h" }
     );
 
-    return token
+    return token;
+}
+
+export const tryCookies = (req: Request, res: Response, next: NextFunction) => {
+    cookieParser(req, res, () => {
+    })
+    res.json(req.cookies);
 }
 
 export const authorize = (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { token } = req.body;
+        console.log(req.cookies);
+        const { token } = req.cookies;
 
         if (!token) {
-            res.status(401).end('<h1>Token is required</h1>');
+            res.status(401).send('<h1>Token is required</h1>');
         } else {
             const { ip, username, iat, exp} = jwt.verify(token, process.env.TOKEN_KEY);
 
             if (!(ip && username && iat && exp)) {
-                res.status(401).end('Bad Auth');
+                res.status(401).send('Bad Auth');
             } else {
                 if (req.ip === ip && exp >= moment().unix()) {
                     res.locals.username = username;
                     res.locals.token = generateToken(username, req.ip);
                     next();
                 } else {
-                    res.status(401).end('Bad Auth');
+                    res.status(401).send('Bad Auth');
                 }
             }
         }
     } catch(e) {
         if (e instanceof TokenExpiredError) {
-            res.status(401).end('<h1>Token has Expired</h1>');
+            res.status(401).send('<h1>Token has Expired</h1>');
         } else {
             console.log(e);
-            res.status(500).end('<h1>Internal Server Error</h1>');
+            res.status(500).send('<h1>Internal Server Error</h1>');
         }
     }
 }
@@ -52,7 +61,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     try {
         
         if (!(username && password)) {
-            res.status(400).end(`<h1>Username and Password is required!</h1>`);
+            res.status(400).send(`<h1>Username and Password is required!</h1>`);
         } else {
             const cred = await User.findOne({username: username});
             
@@ -61,11 +70,11 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
                 
                 res.status(200).json({token});
             } else {
-                res.status(400).end('<h1>Bad Credentials</h1>');
+                res.status(400).send('<h1>Bad Credentials</h1>');
             }
         }
     } catch (e) {
         console.log(e);
-        res.end(`<h1>Internal Server Error</h1>`);
+        res.send(`<h1>Internal Server Error</h1>`);
     }
 }

@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { AuthorizationService } from '../authorization.service';
 import { Router } from '@angular/router';
 
+import { CookieService } from 'ngx-cookie-service';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -14,7 +16,8 @@ export class LoginComponent {
 
   constructor (
     private authorization: AuthorizationService,
-    private router: Router
+    private router: Router,
+    private cookieService: CookieService
   ) {}
 
   login(): void {
@@ -24,9 +27,11 @@ export class LoginComponent {
       const { token } = obj;
 
       if (token) {
-        sessionStorage.setItem('token', token);
         this.error = false;
-        this.router.navigate(['/chat'])
+
+        this.cookieService.set('token', token);
+
+        this.router.navigate(['/chat']);
       } else {
         this.error = true;
         this.username = '';
