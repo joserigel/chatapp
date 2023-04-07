@@ -56,14 +56,17 @@ app.post('/send/:recipient', authorize, async ( req: Request, res: Response) => 
 app.get('/messages/:recipient', authorize, async (req: Request, res: Response, next: NextFunction) => {
     const recipient = req.params['recipient'];
     const messages = await Message.aggregate([
-        { $project: { _id: 0} },
         { $match : { $or: [
             { sender: res.locals.username, recipient: recipient},
             { sender: recipient, recipient: res.locals.username}
         ]}},
         { $sort: { unix: -1} },
         { $skip: 0 },
-        { $limit: 10}
+        { $limit: 10},
+        { $addFields: {
+            fromMe: { $eq: ["$sender", res.locals.username] }
+        }},
+        { $project: { _id: 0, sender: 0, recipient: 0 } },
     ]);
 
     res.status(200).json(messages);
@@ -102,5 +105,5 @@ app.listen(process.env.PORT, async () => {
     );
 
     // Just for testing MongoConnection
-    console.log(await User.findOne({}));
+    console.log(await User.find({}));
 });

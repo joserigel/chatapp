@@ -22,7 +22,15 @@ export class AuthorizationService {
   }
   constructor(
     private http: HttpClient,
-    private cookieService: CookieService) { }
+    private cookieService: CookieService
+    ) 
+  {
+
+  }
+  
+  getUsername(): string {
+    return this.username;
+  }
 
   async login(username: string, password: string): Promise<boolean> {
     const observable = this.http.post<Token>(this.url,
@@ -42,15 +50,4 @@ export class AuthorizationService {
       return false;
     }
   }
-
-  /*
-  login(username: string, password: string): Observable<Token> {
-    return this.http.post<Token>(this.url,
-      JSON.stringify({
-        username, password
-      }),
-      this.httpOptions
-    ).pipe(catchError((e) => {return of(e)}));
-  }
-  */
 }

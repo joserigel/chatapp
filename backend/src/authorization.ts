@@ -26,7 +26,6 @@ export const tryCookies = (req: Request, res: Response, next: NextFunction) => {
 
 export const authorize = (req: Request, res: Response, next: NextFunction) => {
     try {
-        console.log(req.cookies);
         const { token } = req.cookies;
 
         if (!token) {

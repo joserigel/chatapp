@@ -1,5 +1,8 @@
 <div class="chat-section">
-    <div class="bubble reply"><p>a</p></div>
+    <div *ngFor="let message of messages" class="bubble" [class.reply]="!message.fromMe">
+        <p>{{message.text}}</p>
+    </div>
+    <!--div class="bubble reply"><p>a</p></div>
     
     <div class="bubble"><p>This is a speech bubble</p></div>
     
@@ -12,6 +15,6 @@
             <span>.</span>
             <span>.</span>
         </p>
-    </div>
+    </div-->
 
 </div>
