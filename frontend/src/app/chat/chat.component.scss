@@ -1,15 +1,14 @@
 @import '../variables.scss';
 
-.chat-section {
+.messages {
+    grid-row: 1;
     display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-    overflow: auto;
-    
-    height: 100%;
-    width: 100%;
-    
+    flex-direction: column-reverse;
     background-color: $mainColor;
+    height: 100%;
+
+    margin: 0;
+    padding: 0;
 
     .bubble {
         font-size: 36px;
@@ -73,6 +72,7 @@
             }
         }
 
+
         &.typing {
             p {
                 display: flex;
@@ -99,6 +99,31 @@
                     }
                 }
             }
+        }
+    }
+}
+
+.chat-section {
+    display: grid;
+    grid-template-rows: 
+        auto
+        min-content;
+
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    
+    form {
+        grid-row: 2;
+        display: flex;
+        padding: 5px;
+
+        input[type=text] {
+            height: 40px;
+            width: 100%;
+            border-radius: 40px;
+            padding: 3px 15px;
+            font-size: 20px;
         }
     }
 }
